@@ -3,6 +3,8 @@ const nickForm = document.querySelector("#nick");
 const messageForm = document.querySelector("#message");
 const socket = new WebSocket(`ws://${window.location.host}`);
 
+const msg = [];
+
 function makeMessage(type, payload) {
   const msg = { type, payload };
   return JSON.stringify(msg);
@@ -16,6 +18,7 @@ socket.addEventListener("message", (message) => {
   const li = document.createElement("li");
   li.innerText = message.data;
   messageList.append(li);
+  msg.push(message.data);
 });
 
 socket.addEventListener("close", () => {
@@ -29,11 +32,25 @@ function handleSubmit(event) {
   input.value = "";
 }
 
+let nickname = "";
+function changeNickName(before, after) {
+  const chat = document.querySelectorAll("li");
+  for (let i = 0; i < msg.length; i++) {
+    msg[i] = msg[i].replace(before, after);
+    chat[i].innerText = msg[i];
+  }
+}
+
 function handleNickSubmit(event) {
   event.preventDefault();
   const input = nickForm.querySelector("input");
+  if (nickname != "") {
+    changeNickName(nickname, input.value);
+  }
+  nickname = input.value;
   socket.send(makeMessage("nickname", input.value));
   input.value = "";
 }
+
 messageForm.addEventListener("submit", handleSubmit);
 nickForm.addEventListener("submit", handleNickSubmit);
