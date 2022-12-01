@@ -24,30 +24,14 @@ wsServer.on("connection", (socket) => {
     done();
     socket.to(roomName).emit("welcome");
   });
-});
+  socket.on("disconnecting", () => {
+    socket.rooms.forEach((room) => socket.to(room).emit("bye"));
+  });
 
-/*
-const sockets = [];
-
-wss.on("connection", (socket) => {
-  sockets.push(socket);
-  socket["nickname"] = "Anon";
-  console.log("Connected to Browser ✅");
-  socket.on("close", () => console.log("Disconnected from the Browser ❌"));
-  socket.on("message", (msg) => {
-    const message = JSON.parse(msg);
-    switch (message.type) {
-      case "new_message":
-        sockets.forEach((aSocket) =>
-          aSocket.send(`${socket.nickname}: ${message.payload} `)
-        );
-        break;
-      case "nickname":
-        socket["nickname"] = message.payload;
-        break;
-    }
+  socket.on("new_message", (msg, room, done) => {
+    socket.to(room).emit("new_message", msg);
+    done();
   });
 });
-*/
 
 httpServer.listen(3000, handleListen);
