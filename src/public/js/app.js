@@ -31,11 +31,11 @@ function handleNicknameSubmit(event) {
   socket.emit("nickname", input.value);
 }
 
-function showRoom() {
+function showRoom(newCount) {
   welcome.hidden = true;
   room.hidden = false;
   const h3 = room.querySelector("h3");
-  h3.innerText = `Room ${roomName}`;
+  h3.innerText = `Room ${roomName} (${newCount})`;
   const msgform = room.querySelector("#msg");
   const nameform = room.querySelector("#name");
   msgform.addEventListener("submit", handleMessageSubmit);
